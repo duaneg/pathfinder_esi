@@ -12,13 +12,12 @@ use Exodus4D\ESI\Mapper\EveScout as Mapper;
 
 class EveScout extends Client\AbstractApi implements EveScoutInterface {
 
-    /**
-     * @return RequestConfig
-     */
-    protected function getTheraConnectionsRequest() : RequestConfig {
+    private function getHubConnectionsRequest(string hub) : RequestConfig {
         return new RequestConfig(
             WebClient::newRequest('GET', $this->getConfig()->getEndpoint(['wormholes', 'GET'])),
-            [],
+            $this->getRequestOptions('', null, [
+                'system_name' => hub
+            ]),
             function($body) : array {
                 $connectionsData = [];
                 if(!$body->error){
@@ -32,6 +31,20 @@ class EveScout extends Client\AbstractApi implements EveScoutInterface {
                 return $connectionsData;
             }
         );
+    }
+
+    /**
+     * @return RequestConfig
+     */
+    protected function getTheraConnectionsRequest() : RequestConfig {
+        return getHubConnectionsRequest("thera");
+    }
+
+    /**
+     * @return RequestConfig
+     */
+    protected function getTurnurConnectionsRequest() : RequestConfig {
+        return getHubConnectionsRequest("turnur");
     }
 
     /**
